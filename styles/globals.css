@@ -1,0 +1,9 @@
+.userSettings__popover {
+  width: 180px !important;
+}
+
+.submenu__inner .tabs,
+.submenu__inner header {
+  height: 100%;
+  border: none;
+}

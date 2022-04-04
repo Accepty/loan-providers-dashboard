@@ -1,0 +1,258 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Accepty Loan Provider Insights API",
+    "version": "v3",
+    "contact": {
+      "name": "Accepty Support",
+      "email": "robert@accepty.co.uk"
+    },
+    "description": "# Introduction\n## Overview\nWelcome to the Accepty Lender Insights API.\n\nThis document explains how to retrieve anonymised decision information made by all lenders on the Accepty loans platform.\n\nYou will not be able to retrieve decision information originating from introducers where you are not currently part of their lending panel.\n"
+  },
+  "servers": [
+    {
+      "url": "https://dev-apis.accepty.co.uk",
+      "description": "Staging."
+    },
+    {
+      "url": "https://apis.accepty.co.uk",
+      "description": "Production."
+    }
+  ],
+  "paths": {
+    "/loans/v3/insights": {
+      "get": {
+        "tags": [
+          "Insights"
+        ],
+        "summary": "Request personalised decisions.",
+        "description": "This endpoint returns the details of all loan application decisions, including current statuses based on the lenders' latest reports. Information is updated live.\nUse the query parameters to filter applications. Use the values returned in the page.after and page.before fields of this endpoint's response to retrieve the next and previous pages of results.\nDecisions will be returned in order of latest first.",
+        "operationId": "LoansInsightsGet",
+        "parameters": [
+          {
+            "name": "date-from",
+            "in": "query",
+            "description": "The date from which to retrieve applications from. This parameter can be used without 'date-to'. Must be in the format of yyyy-mm-dd.",
+            "schema": {
+              "pattern": "^\\d{4}[\\-](0?[1-9]|1[012])[\\-](0?[1-9]|[12][0-9]|3[01])$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "date-to",
+            "in": "query",
+            "description": "The date to which to retrieve applications to. Must use this parameter in conjunction with 'date-from'. Must be in the format of yyyy-mm-dd.",
+            "schema": {
+              "pattern": "^\\d{4}[\\-](0?[1-9]|1[012])[\\-](0?[1-9]|[12][0-9]|3[01])$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page-size",
+            "in": "query",
+            "description": "Specifies the number of application decisions per page. Must use a positive integer. Limited to maximum 5,000 application decisions per page.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Used for pagination. If a request to this endpoint returns a value in page.after, enter the value into this query parameter to get the next page. Cannot use this query parameter with the \"before\" query paramter.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "Used for pagination. If a request to this endpoint returns a value in page.before, enter the value into this query parameter to get the previous page. Cannot use this query parameter with the \"after\" query paramter.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "The BasicAuth token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsightsDecisions"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "BasicAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "InsightsDecisions": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "$ref": "#/components/schemas/Page"
+          },
+          "result": {
+            "type": "array",
+            "description": "A list of previously quoted applications.\r\nThe applications will be ordered by time submitted (latest first).",
+            "items": {
+              "$ref": "#/components/schemas/Result"
+            }
+          }
+        }
+      },
+      "Page": {
+        "type": "object",
+        "properties": {
+          "after": {
+            "type": "integer",
+            "description": "The value to use in the \"after\" query parameter to get the next page."
+          },
+          "before": {
+            "type": "integer",
+            "description": "The value to use in the \"before\" query parameter to get the previous page."
+          }
+        }
+      },
+      "Result": {
+        "type": "object",
+        "properties": {
+          "client": {
+            "type": "string",
+            "description": "The name of the loan introducer."
+          },
+          "application_id": {
+            "type": "string",
+            "description": "The id of the loan application",
+            "format": "uuid"
+          },
+          "rank": {
+            "type": "integer",
+            "description": "The position the decision appeared in the table according to the method Accepty ranks decisions on its white labels."
+          },
+          "lender_id": {
+            "type": "string",
+            "description": "The lender name. This field will be pseudonymed or empty, depending on your plan."
+          },
+          "lender_application_id": {
+            "type": "string",
+            "description": "Your internal application id."
+          },
+          "product": {
+            "type": "string",
+            "description": "The quoted product type. Will be one of [\"unsecured\", \"secured\", \"broker\", \"guarantor\", \"credit_line\", \"short_term\"]."
+          },
+          "status": {
+            "type": "string",
+            "description": "The status of the quote. Will be one of [\"quoted\", \"not_quoted\"."
+          },
+          "requested_amount": {
+            "type": "number",
+            "description": "The requested amount. Rounded to two decimal places.",
+            "format": "double"
+          },
+          "requested_term": {
+            "type": "integer",
+            "description": "The requested term.",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "description": "The quoted amount. Rounded to two decimal places.",
+            "format": "double"
+          },
+          "term": {
+            "type": "integer",
+            "description": "The quoted term.",
+            "format": "int32"
+          },
+          "apr": {
+            "type": "number",
+            "description": "The annualised rate (including fees and interest) in percentage. Rounded to two decimal places.",
+            "format": "double"
+          },
+          "apr_type": {
+            "type": "string",
+            "description": "The type of the APR. Will be one of [\"guaranteed\", \"representative\"]."
+          },
+          "submitted_at": {
+            "type": "string",
+            "description": "The date and time that the application was submitted.",
+            "format": "datetime"
+          },
+          "decisioned_at": {
+            "type": "string",
+            "description": "The date and time that the lender returned a decision. This field will be populated or empty, depending on your plan."
+          },
+          "redirected_at": {
+            "type": "string",
+            "description": "The date and time that the applicant redirected on the decision. This field will be populated or empty, depending on your plan.",
+            "format": "datetime"
+          },
+          "disbursed_at": {
+            "type": "string",
+            "description": "The date and time that the loan was disbursed to the applicant. This field will be populated or empty, depending on your plan.",
+            "format": "datetime"
+          }
+        }
+      },
+      "HttpError": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "The error code."
+                },
+                "message": {
+                  "type": "string",
+                  "description": "The error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BasicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  }
+}

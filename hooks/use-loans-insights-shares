@@ -1,0 +1,33 @@
+import useSWR from 'swr'
+import fetcherBasicAuth from '@/libs/fetcher-basic-auth'
+
+const useLoansInsightsShares = (
+  { username, password },
+  from,
+  to,
+  client,
+) => {
+  const { data, error } = useSWR(
+    username && password
+      ? [
+        `${process.env.NEXT_PUBLIC_LOANS_API_SLS_URL}/loans/v3/insights/shares?date-from=${from}&date-to=${to}${client}`,
+        username,
+        password,
+      ]
+      : null,
+    fetcherBasicAuth,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      shouldRetryOnError: false,
+    },
+  )
+
+  return {
+    data,
+    isLoading: !error && !data,
+    isError: error,
+  }
+}
+
+export default useLoansInsightsShares

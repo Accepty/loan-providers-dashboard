@@ -1,0 +1,36 @@
+.menuNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 782pt; /*${theme.layout.pageWidthWithMargin};*/
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 16pt; /*0 ${theme.layout.pageMargin};*/
+  font-size: 16px;
+  height: 54px;
+  box-sizing: border-box;
+}
+
+.menuNav > div {
+  display: flex;
+  align-items: center;
+}
+
+.themeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  margin: 0 8pt; /*0 ${theme.layout.gapHalf};*/
+}
+
+.avatarMenu__button {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  cursor: pointer;
+}
