@@ -16,21 +16,12 @@ const BarChart = dynamic(() => import('@opd/g2plot-react').then(({ BarChart }) =
   const lenderDataTemp = data.result.filter((obj) => obj.lender_id) and enderDataTemp.length === 1
   in useEffect() will need to be changed to use loansApiCreds.username as the length of the array
   for a lender with more than one product will also be more than one.
+
+  This dashboard does not not show performance on channels where that lender is not live.
   
   TODO
 
-  Do not share names of lenders, do not use pseudonyms either.
-  Do not show performance on channels where that lender is not live.
-
-  Overview:
-  Nth position this month in terms of app/quote rate.
-  Nth position this month in terms of quote/redirect rate.
-  Nth position this month in terms of app/redirect rate.
-  Nth position this month in terms of redirect/completion rate.
-  Nth position this month in terms of app/completion rate.
-
   Data:
-  Table of lender quoted and not quoted (erros are not quoted).
   Filter by date, source, status (quoted/not quoted).
 
   Applications:
@@ -39,18 +30,14 @@ const BarChart = dynamic(() => import('@opd/g2plot-react').then(({ BarChart }) =
 
   Quotes
   Bar chart out of 100% of who is quoting.
-  Filter by date, source.
+  Filter by source.
 
   Redirects
   Pie chart of where redirects are going to.
-  Filter by date, source, status (quoted/not quoted).
+  Filter by source, status (quoted/not quoted).
 
   Completions
-  Bar chart out of 100% of redirect/completion rates.
-  Filter by date, source, status (quoted/not quoted).
-
-  Change color of insights icon depending on whether lender lands in top, middle, bottom third of overall
-  products.
+  Filter by source, status (quoted/not quoted).
 */
 
 const Home = () => {

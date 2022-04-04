@@ -2,6 +2,8 @@ import React from 'react'
 import { useTheme } from '@geist-ui/core'
 import { RedocStandalone } from 'redoc'
 
+// TODO insights/shares documentation.
+
 const Documentation = () => {
   const theme = useTheme()
 
