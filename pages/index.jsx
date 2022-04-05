@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'
 import { Card, Dot, Spacer, Spinner, Text, useTheme } from '@geist-ui/core'
+import NoData from '@/components/NoData'
 import CollapseInsights from '@/components/Collapse/Insights'
 import HeadingOverview from '@/components/Heading/Overview'
 import { getDateStringFromTimestamp } from '@/helpers/dates'
 import useLoansInsightsShares from '@/hooks/use-loans-insights-shares'
+import useLoansInsightsIntroducers from '@/hooks/use-loans-insights-introducers'
 
 const PieChart = dynamic(() => import('@opd/g2plot-react').then(({ PieChart }) => PieChart), { ssr: false })
 const BarChart = dynamic(() => import('@opd/g2plot-react').then(({ BarChart }) => BarChart), { ssr: false })
@@ -66,7 +68,9 @@ const Home = () => {
     getDateStringFromTimestamp(yesterdayTimestamp),
     getDateStringFromTimestamp(todayTimestamp),
   ])
-  const [client, setClient] = useState('')
+  const [providerParam, setProviderParam] = useState('')
+  const [introducerParam, setIntroducerParam] = useState('')
+  const [introducers, setIntroducers] = useState([])
   const [pieData, setPieData] = useState([])
   const [barData, setBarData] = useState([])
   const [lenderUserProduct, setLenderUserProduct] = useState('n/a')
@@ -74,12 +78,21 @@ const Home = () => {
   const [lenderUserProductPieData, setLenderUserProductPieData] = useState([])
   const [lenderUserBarData, setLenderUserBarData] = useState([])
   const [lenderUserProductBarData, setLenderUserProductBarData] = useState([])
-  const { data, isLoading, isError } = useLoansInsightsShares(
-    loansApiCreds,
-    dateRange[0],
-    dateRange[1],
-    client,
-  )
+  const {
+    data: introData,
+    // isLoading: introIsLoading,
+    // isError: introIsError,
+  } = useLoansInsightsIntroducers(loansApiCreds, providerParam)
+  const {
+    data,
+    isLoading,
+    // isError,
+  } = useLoansInsightsShares(loansApiCreds, dateRange[0], dateRange[1], introducerParam)
+
+  useEffect(() => {
+    if (!introData) return
+    setIntroducers(introData.result)
+  }, [introData])
 
   useEffect(() => {
     if (!data) return
@@ -129,6 +142,14 @@ const Home = () => {
 
   const onDateRangeChange = (timestamps) => {
     setDateRange(timestamps.map((timestamp) => getDateStringFromTimestamp(timestamp)))
+  }
+
+  const onIntroducerChange = (introducer) => {
+    if (introducer === 'All') {
+      setIntroducerParam('')
+    } else {
+      setIntroducerParam(`&client=${introducer}`)
+    }
   }
 
   const getShareRank = (data, value) => {
@@ -296,6 +317,8 @@ const Home = () => {
         initialDateRange={initialDateRange}
         onDateRangeChange={onDateRangeChange}
         selectionDates={selectionDates}
+        introducers={introducers}
+        onIntroducerChange={onIntroducerChange}
       />
       <div className="page__wrapper">
         <div className="page__content">
@@ -341,24 +364,26 @@ const Home = () => {
                 ? <div className="spinner__wrapper">
                     <Spinner />
                   </div>
-                : <div className="pie-charts__container">
-                    <div>
-                      <Text>Applications</Text>
-                      <PieChart {...configApplications} data={pieData} />
+                : (pieData.length)
+                  ? <div className="pie-charts__container">
+                      <div>
+                        <Text>Applications</Text>
+                        <PieChart {...configApplications} data={pieData} />
+                      </div>
+                      <div>
+                        <Text>Quotes</Text>
+                        <PieChart {...configQuotes} data={pieData} />
+                      </div>
+                      <div>
+                        <Text>Redirects</Text>
+                        <PieChart {...configRedirects} data={pieData} />
+                      </div>
+                      <div>
+                        <Text>Completions</Text>
+                        <PieChart {...configCompletions} data={pieData} />
+                      </div>
                     </div>
-                    <div>
-                      <Text>Quotes</Text>
-                      <PieChart {...configQuotes} data={pieData} />
-                    </div>
-                    <div>
-                      <Text>Redirects</Text>
-                      <PieChart {...configRedirects} data={pieData} />
-                    </div>
-                    <div>
-                      <Text>Completions</Text>
-                      <PieChart {...configCompletions} data={pieData} />
-                    </div>
-                  </div>
+                  : <NoData />
               }
             </Card.Content>
           </Card>
@@ -399,7 +424,9 @@ const Home = () => {
                 ? <div className="spinner__wrapper">
                     <Spinner />
                   </div>
-                : <BarChart {...barChartConfig} data={barData} />
+                : (barData.length)
+                  ? <BarChart {...barChartConfig} data={barData} />
+                  : <NoData />
               }
             </Card.Content>
           </Card>

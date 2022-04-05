@@ -50,6 +50,8 @@ function App({ Component, pageProps }) {
   )
 }
 
+// TODO could have a page that directs to registration or sign in.
+// Or could redirect to a "contact us to verify your account" if we spot some user data?
 function Auth({ children }) {
   const { data: session } = useSession({ required: true })
   const isUser = !!session?.user
