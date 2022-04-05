@@ -1,16 +1,11 @@
 import useSWR from 'swr'
 import fetcherBasicAuth from '@/libs/fetcher-basic-auth'
 
-const useLoansInsightsShares = (
-  { username, password },
-  from,
-  to,
-  introducerParam,
-) => {
+const useLoansInsightsIntroducers = ({ username, password }, providerParam) => {
   const { data, error } = useSWR(
     username && password
       ? [
-        `${process.env.NEXT_PUBLIC_LOANS_API_SLS_URL}/loans/v3/insights/shares?date-from=${from}&date-to=${to}${introducerParam}`,
+        `${process.env.NEXT_PUBLIC_LOANS_API_SLS_URL}/loans/v3/insights/introducers?${providerParam}`,
         username,
         password,
       ]
@@ -30,4 +25,4 @@ const useLoansInsightsShares = (
   }
 }
 
-export default useLoansInsightsShares
+export default useLoansInsightsIntroducers
