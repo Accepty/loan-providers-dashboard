@@ -102,7 +102,7 @@ const Home = () => {
       { 
         ...obj,
         lender_id_product: (obj.lender_id)
-          ? `${obj.lender_id} (${obj.product.replace(/_/g, ' ')})`
+          ? `${obj.lender_id} (${obj.product?.replace(/_/g, ' ')})`
           : `${(Math.random() + 1).toString(36).substring(9)} (${obj.product})`,
       }
     ))
@@ -152,8 +152,8 @@ const Home = () => {
     }
   }
 
-  const getShareRank = (data, value) => {
-    const rank = data.filter((obj) => obj.applications > value).length + 1
+  const getShareRank = (data, shareStage, value) => {
+    const rank = data.filter((obj) => obj[shareStage] > value).length + 1
     const percentile = rank / data.length * 100
     let percentileSet = 'error'
 
@@ -335,25 +335,25 @@ const Home = () => {
                   <div className="insight">
                     <Dot type={getShareRank(pieData, lenderUserPieData.applications).percentileSet} />
                     <Text span>
-                      For application share, {lenderUserPieData.lender_id} is ranked {getShareRank(pieData, lenderUserPieData.applications).rank} out of {pieData.length} overall and {getShareRank(lenderUserProductPieData, lenderUserPieData.applications).rank} out of {lenderUserProductPieData.length} in the {lenderUserProduct} product category.
+                      For application share, {lenderUserPieData.lender_id} is ranked {getShareRank(pieData, 'applications', lenderUserPieData.applications).rank} out of {pieData.length} overall and {getShareRank(lenderUserProductPieData, 'applications', lenderUserPieData.applications).rank} out of {lenderUserProductPieData.length} in the {lenderUserProduct} product category.
                     </Text>
                   </div>
                   <div className="insight">
                     <Dot type={getShareRank(pieData, lenderUserPieData.quotes).percentileSet} />
                     <Text span>
-                      For quote share, {lenderUserPieData.lender_id} is ranked {getShareRank(pieData, lenderUserPieData.quotes).rank} out of {pieData.length} overall and {getShareRank(lenderUserProductPieData, lenderUserPieData.quotes).rank} out of {lenderUserProductPieData.length} in the {lenderUserProduct} product category.
+                      For quote share, {lenderUserPieData.lender_id} is ranked {getShareRank(pieData, 'quotes', lenderUserPieData.quotes).rank} out of {pieData.length} overall and {getShareRank(lenderUserProductPieData, 'quotes', lenderUserPieData.quotes).rank} out of {lenderUserProductPieData.length} in the {lenderUserProduct} product category.
                     </Text>
                     </div>
                   <div className="insight">
                     <Dot type={getShareRank(pieData, lenderUserPieData.redirects).percentileSet} />
                     <Text span>
-                      For redirect share, {lenderUserPieData.lender_id} is ranked {getShareRank(pieData, lenderUserPieData.redirects).rank} out of {pieData.length} overall and {getShareRank(lenderUserProductPieData, lenderUserPieData.quotes).rank} out of {lenderUserProductPieData.length} in the {lenderUserProduct} product category.
+                      For redirect share, {lenderUserPieData.lender_id} is ranked {getShareRank(pieData, 'redirects', lenderUserPieData.redirects).rank} out of {pieData.length} overall and {getShareRank(lenderUserProductPieData, 'redirects', lenderUserPieData.quotes).rank} out of {lenderUserProductPieData.length} in the {lenderUserProduct} product category.
                     </Text>
                   </div>
                   <div className="insight">
                     <Dot type={getShareRank(pieData, lenderUserPieData.completions).percentileSet} />
                     <Text span>
-                      For completion share, {lenderUserPieData.lender_id} is ranked {getShareRank(pieData, lenderUserPieData.completions).rank} out of {pieData.length} overall and {getShareRank(lenderUserProductPieData, lenderUserPieData.quotes).rank} out of {lenderUserProductPieData.length} in the {lenderUserProduct} product category.
+                      For completion share, {lenderUserPieData.lender_id} is ranked {getShareRank(pieData, 'completions', lenderUserPieData.completions).rank} out of {pieData.length} overall and {getShareRank(lenderUserProductPieData, 'completions', lenderUserPieData.quotes).rank} out of {lenderUserProductPieData.length} in the {lenderUserProduct} product category.
                     </Text>
                   </div>
                 </div>
